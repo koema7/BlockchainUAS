@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Ballot Giving DApps</title>
+</head>
+<body>
+  Simple Ballot Giving
+  <br />
+  User Address: <input type="text" id="userAddress">
+  <br />
+  <button id="addBallot">Sent Ballot</button>
+  <button id="seeBallot">See Ballot</button>
+  <br />
+  Ballot Owned By <label id="myLabel1"></label>: <label id="myLabel2"></label>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
+
+<script>
+    const web3 = new Web3('http://localhost:8545');
+    const myContractAddress = '0x4D60B49eDfECdcBCCC130a3C25f9EC8B114E0151';
+    const myAbi = [{"inputs":[{"internalType":"string","name":"addr","type":"string"}],"name":"addBalot","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ballot","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"addr","type":"string"}],"name":"display","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"listOfUser","outputs":[{"internalType":"string","name":"userAddr","type":"string"},{"internalType":"int256","name":"userballot","type":"int256"}],"stateMutability":"view","type":"function"}]
+    const myContract = new web3.eth.Contract(myAbi, myContractAddress);
+    const htmlLabel1 = document.getElementById('myLabel1');
+    const htmlLabel2 = document.getElementById('myLabel2');
+    $('#addBallot').click(function () {
+      const addr = document.getElementById("userAddress").value;
+      console.log(addr);
+      myContract.methods.addBalot(addr).send({from:'0x4660104F7d3d392CA2D640703BcCaEe53b5D1552'},function () {
+        myContract.methods.display(addr).call((error, result) => { htmlLabel2.innerHTML = result; htmlLabel1.innerHTML = addr; console.log(result)})
+      })
+    });
+    $('#seeBallot').click(function () {
+      const addr = document.getElementById("userAddress").value;
+      console.log(addr);
+      myContract.methods.display(addr).send({from:'0x4660104F7d3d392CA2D640703BcCaEe53b5D1552'},function () {
+        myContract.methods.display(addr).call((error, result) => { htmlLabel2.innerHTML = result; htmlLabel1.innerHTML = addr; console.log(result)})
+      })
+    });
+  </script>
+</html>
